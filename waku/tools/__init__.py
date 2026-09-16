@@ -80,4 +80,14 @@ def build_registry(conn: sqlite3.Connection, settings: Settings, memory=None) ->
         except ImportError:
             print("mcp.json found but the 'mcp' package is missing — pip install 'waku-agent[mcp]'")
 
+    # ---- Genesis: background coding worker ----
+    # Keeps the Waku loop untouched. The dispatch tool is just another entry
+    # in the registry; the worker runs in its own asyncio task.
+    try:
+        from genesis.waku_integration import register_genesis
+        register_genesis(registry, settings)
+    except ImportError:
+        # genesis not installed in this environment — fine for stock Waku.
+        pass
+
     return registry
